@@ -7,7 +7,7 @@ services:
     ports:
       - 9090:9090
     volumes:
-      - ./.config/prometheus.yaml:/etc/prometheus/prometheus.yaml
+      - ./config/prometheus.yaml:/etc/prometheus/prometheus.yaml
     restart: unless-stopped
     networks: 
       - grafana_network
@@ -18,7 +18,7 @@ services:
     ports:
       - "3000:3000"
     volumes:
-      - ./.grafana-data:/var/lib/grafana
+      - ./gfdata:/var/lib/grafana
     restart: unless-stopped
     networks: 
       - grafana_network
