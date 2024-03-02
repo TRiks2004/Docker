@@ -2,50 +2,65 @@ version: '3.8'
 
 networks:
   grafana:
-  timescaledb:
+    ipam:
+      driver: default
+      config:
+        - subnet: 172.28.0.0/16
 
 services:
   prometheus:
     image: prom/prometheus:latest
     volumes:
-      - ".data-docker/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml"
-      - ".data-docker/prometheus/rules.yml:/etc/prometheus/rules.yml"
-    networks:
-      - localprom
+      - /Docker/data-docker/prometheus:/etc/prometheus/
+    container_name: prometheus
+    hostname: prometheus
+    command:
+      - --config.file=/etc/prometheus/prometheus.yml
     ports:
       - 9090:9090
-  
-  node-exporter:
-    image: prom/node-exporter:latest
-    networks:
-      - localprom
-    ports:
-      - 9100:9100
-  
-  alert-manager:
-    image: prom/alertmanager:latest
-    volumes:
-      - ".data-docker/alertmanager/alertmanager.yml:/alertmanager/alertmanager.yml"
-    networks:
-      - localprom
-    ports:
-      - 9093:9093
- 
-       
-  grafana:
-    image: grafana/grafana:${GRAFANA_VERSION}
+    restart: unless-stopped
+    environment:
+      TZ: "Europe/Moscow"
     networks:
       - grafana
-      - timescaledb
+
+  node-exporter:
+    image: prom/node-exporter
+    volumes:
+      - /Docker/data-docker/proc:/host/proc:ro
+      - /Docker/data-docker/sys:/host/sys:ro
+      - /Docker/data-docker/rootfs:/rootfs:ro
+    container_name: exporter
+    hostname: exporter
+    command:
+      - --path.procfs=/host/proc
+      - --path.sysfs=/host/sys
+      - --collector.filesystem.ignored-mount-points
+      - ^/(sys|proc|dev|host|etc|rootfs/var/lib/docker/containers|rootfs/var/lib/docker/overlay2|rootfs/run/docker/netns|rootfs/var/lib/docker/aufs)($$|/)
     ports:
-      - "${GRAFANA_PORT}:3000"
+      - 9100:9100
+    restart: unless-stopped
     environment:
+      TZ: "Europe/Moscow"
+    networks:
+      - grafana
+
+  grafana:
+    image: grafana/grafana:${GRAFANA_VERSION}
+    depends_on:
+      - prometheus
+    ports:
+      - ${GRAFANA_PORT}:3000
+    volumes:
+      -  ${GRAFANA_DATA}:/var/lib/grafana
+      -  ${GRAFANA_DATA}:/etc/grafana/provisioning/
+    container_name: grafana
+    hostname: grafana
+    restart: unless-stopped
+    environment:
+      - "TZ =Europe/Moscow"
       - GF_AUTH_ANONYMOUS_ORG_ROLE=Admin
       - GF_AUTH_ANONYMOUS_ENABLED=true
       - GF_AUTH_BASIC_ENABLED=false
-    volumes:
-      - ${GRAFANA_DATA}:/etc/grafana/provisioning/
-
-  networks:
-    localprom:
-      driver: bridge
+    networks:
+      - grafana
