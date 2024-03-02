@@ -13,7 +13,7 @@ services:
       - grafana_network
     
   grafana:
-    image: grafana/grafana:latest
+    image: grafana/grafana:${GRAFANA_VERSION}
     container_name: grafana
     ports:
       - "3000:3000"
@@ -22,6 +22,10 @@ services:
     restart: unless-stopped
     networks: 
       - grafana_network
+    environment:
+      - GF_AUTH_ANONYMOUS_ORG_ROLE=Admin
+      - GF_AUTH_ANONYMOUS_ENABLED=true
+      - GF_AUTH_BASIC_ENABLED=false
 
 networks:
   grafana_network:
