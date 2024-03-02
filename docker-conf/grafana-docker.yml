@@ -5,13 +5,14 @@ services:
     image: grafana/grafana:${GRAFANA_VERSION}
     container_name: grafana
     restart: unless-stopped
-    environment:
-      # increases the log level from info to debug
-      - GF_LOG_LEVEL=debug
     ports:
       - '3000:3000'
+    environment:
+      - GF_AUTH_ANONYMOUS_ORG_ROLE=Admin
+      - GF_AUTH_ANONYMOUS_ENABLED=true
+      - GF_AUTH_BASIC_ENABLED=false
     volumes:
-      - './grafana_storage:/var/lib/grafana'
+      - ${GRAFANA_DATA}:/etc/grafana/provisioning/
     networks:
       - grafana_network
 
