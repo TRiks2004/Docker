@@ -1,7 +1,7 @@
 version: '3.8'
 
 networks:
-  grafana_net:
+  grafananet:
     ipam:
       driver: default
       config:
@@ -22,7 +22,7 @@ services:
     environment:
       TZ: "Europe/Moscow"
     networks:
-      - grafana_net
+      - grafananet
 
   node-exporter:
     image: prom/node-exporter
@@ -43,7 +43,7 @@ services:
     environment:
       TZ: "Europe/Moscow"
     networks:
-      - grafana_net
+      - grafananet
 
   grafana:
     image: grafana/grafana:${GRAFANA_VERSION}
@@ -62,4 +62,4 @@ services:
       - "TZ =Europe/Moscow"
       - grafana
     networks:
-      - grafana_net
+      - grafananet
