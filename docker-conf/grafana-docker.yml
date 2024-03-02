@@ -23,7 +23,8 @@ services:
     command:
       - --config.file=/etc/prometheus/prometheus.yml
     volumes:
-      - ./prometheus-date.yml:/etc/prometheus/prometheus.yml:ro
+      - ./prometheus-date.yml:/etc/prometheus/prometheus.yml
+      - ./prometheus-data:/prometheus
     networks:
       - grafana_network
 
