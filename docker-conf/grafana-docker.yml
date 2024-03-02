@@ -1,65 +1,22 @@
 version: '3.8'
 
-networks:
-  grafananet:
-    ipam:
-      driver: default
-      config:
-        - subnet: 172.28.0.0/16
-
 services:
   prometheus:
-    image: prom/prometheus:latest
-    volumes:
-      - /Docker/data-docker/prometheus:/etc/prometheus/
+    image: prom/prometheus:v2.50.1
     container_name: prometheus
-    hostname: prometheus
-    command:
-      - --config.file=/etc/prometheus/prometheus.yml
     ports:
       - 9090:9090
-    restart: unless-stopped
-    environment:
-      TZ: "Europe/Moscow"
-    networks:
-      - grafananet
-
-  node-exporter:
-    image: prom/node-exporter
+    command: "--config.file=/etc/prometheus/prometheus.yaml"
     volumes:
-      - /Docker/data-docker/proc:/host/proc:ro
-      - /Docker/data-docker/sys:/host/sys:ro
-      - /Docker/data-docker/rootfs:/rootfs:ro
-    container_name: exporter
-    hostname: exporter
-    command:
-      - --path.procfs=/host/proc
-      - --path.sysfs=/host/sys
-      - --collector.filesystem.ignored-mount-points
-      - ^/(sys|proc|dev|host|etc|rootfs/var/lib/docker/containers|rootfs/var/lib/docker/overlay2|rootfs/run/docker/netns|rootfs/var/lib/docker/aufs)($$|/)
-    ports:
-      - 9100:9100
+      - ./.config/prometheus.yaml:/etc/prometheus/prometheus.yaml:ro
+      - ./.data:/prometheus
     restart: unless-stopped
-    environment:
-      TZ: "Europe/Moscow"
-    networks:
-      - grafananet
-
-  grafana:
-    image: grafana/grafana:${GRAFANA_VERSION}
-    depends_on:
-      - prometheus
-    ports:
-      - ${GRAFANA_PORT}:3000
-    volumes:
-      -  ${GRAFANA_DATA}:/var/lib/grafana
-      -  ${GRAFANA_DATA}:/etc/grafana/provisioning/
-    container_name: grafana
-    hostname: grafana
-    user: root
-    restart: unless-stopped
-    environment:
-      - "TZ =Europe/Moscow"
-      - grafana
-    networks:
-      - grafananet
+    
+    grafana:
+      image: grafana/grafana-oss:10.3.3
+      container_name: grafana
+      ports:
+        - "3000:3000"
+      volumes:
+        - ./.grafana-data:/var/lib/grafana
+      restart: unless-stopped
