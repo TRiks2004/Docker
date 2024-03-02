@@ -1,0 +1,35 @@
+version: '3.8'
+services:
+  app:
+    image: 'jc21/nginx-proxy-manager:${NPM_VERSION}' 
+    restart: unless-stopped
+    ports:
+      - '80:80' 
+      - '443:443' 
+      - '9878:81'
+    environment:
+      TZ: ${TIME_ZONE}
+      DB_MYSQL_HOST: "db"
+      DB_MYSQL_PORT: 3306
+      DB_MYSQL_USER: "${MDB_NPM_USER}"
+      DB_MYSQL_PASSWORD: "${MDB_NPM_PASSWORD}"
+      DB_MYSQL_NAME: "${MDB_NPM_DATABASE}"
+      
+    volumes:
+      - ${NPM_DATA}:/data
+      - ${NPM_LETSENCRYPT_DATA}:/etc/letsencrypt
+    depends_on:
+      - db
+
+  db:
+    image: 'jc21/mariadb-aria:${MDB_NPM_VERSION}'
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: '${MDB_NPM_ROOT_PASSWORD}'
+      MYSQL_DATABASE: '${MDB_NPM_DATABASE}'
+      MYSQL_USER: '${MDB_NPM_USER}'
+      MYSQL_PASSWORD: '${MDB_NPM_PASSWORD}'
+      MARIADB_AUTO_UPGRADE: '${MDB_NPM_AUTO_UPGRADE}'
+      TZ: ${TIME_ZONE}
+    volumes:
+      - ${MDB_NPM_DATA}:/var/lib/mysql

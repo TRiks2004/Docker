@@ -1,0 +1,15 @@
+version: '3.8'
+services:
+  portainer:
+    container_name: portainer-ce
+    image: portainer/portainer-ce:${PORTAINER_VERSION}
+    restart: always
+    ports:
+      - '${PORTAINER_PORT_TUNNEL_SERVER}:8000' 
+      - '${PORTAINER_PORT_UI}:9443'
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock 
+      - ${PORTAINER_DATA}:/data
+    environment:
+      - TZ=${TIME_ZONE}
+        
