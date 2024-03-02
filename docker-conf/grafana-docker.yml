@@ -28,8 +28,5 @@ services:
     networks:
       - grafana_network
 
-volumes:
-  grafana_storage: {}
-
 networks:
   grafana_network:
