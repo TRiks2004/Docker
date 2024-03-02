@@ -34,15 +34,3 @@ services:
       - GF_AUTH_BASIC_ENABLED=false
     volumes:
       - ${GRAFANA_DATA}:/etc/grafana/provisioning/
- 
-
-  k6:
-    build: ./xk6-output-timescaledb
-    networks:
-      - k6
-    ports:
-      - "6565:6565"
-    environment:
-      - K6_OUT=timescaledb=postgresql://k6:k6@timescaledb:5432/k6
-    volumes:
-      - ${SAMPLES_DATA}:/scripts
