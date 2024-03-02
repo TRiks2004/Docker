@@ -1,31 +1,22 @@
 version: '3.8'
 
-services:
-  prometheus:
-    image: prom/prometheus:latest
-    container_name: prometheus
-    ports:
-      - 9090:9090
-    volumes:
-      - ./config/prometheus.yaml:/etc/prometheus/prometheus.yaml
-    restart: unless-stopped
-    networks: 
-      - grafana_network
-    
+services:  
   grafana:
-    image: grafana/grafana:${GRAFANA_VERSION}
+    image: grafana/grafana-enterprise
     container_name: grafana
-    ports:
-      - "3000:3000"
-    volumes:
-      - ./gfdata:/var/lib/grafana
     restart: unless-stopped
-    networks: 
-      - grafana_network
     environment:
-      - GF_AUTH_ANONYMOUS_ORG_ROLE=Admin
-      - GF_AUTH_ANONYMOUS_ENABLED=true
-      - GF_AUTH_BASIC_ENABLED=false
+      # increases the log level from info to debug
+      - GF_LOG_LEVEL=debug
+    ports:
+      - '3000:3000'
+    volumes:
+      - 'grafana_storage:/var/lib/grafana'
+    networks:
+      - grafana_network
+  
+volumes:
+  grafana_storage: {}
 
 networks:
   grafana_network:
