@@ -1,26 +1,26 @@
 version: '3.8'
 
 services:
-   db_mysql:
-      container_name: db_mysql
-      image: mysql
-      ports:
-        - "${DB_MYSQL_PORT}:3306"
-      restart: always
-      environment:
-        - MYSQL_USER=${DB_MYSQL_USER}
-        - MYSQL_PASSWORD=${DB_MYSQL_PASSWORD}
-        - MYSQL_ROOT_PASSWORD=${DB_MYSQL_ROOT_PASSWORD}
-        - TZ=${TIME_ZONE}
-      volumes:
-        - ${DB_MYSQL_DATA}:/var/lib/mysql
-    phpmyadmin:
-      container_name: phpmyadmin
-      image: phpmyadmin
-      restart: always
-      ports:
-        - "8091:80"
-      environment:
-        - PMA_HOST=db_mysql
-      depends_on:
-        - db_mysql
+  db_mysql:
+    container_name: db_mysql
+    image: mysql
+    ports:
+      - "${DB_MYSQL_PORT}:3306"
+    restart: always
+    environment:
+      - MYSQL_USER=${DB_MYSQL_USER}
+      - MYSQL_PASSWORD=${DB_MYSQL_PASSWORD}
+      - MYSQL_ROOT_PASSWORD=${DB_MYSQL_ROOT_PASSWORD}
+      - TZ=${TIME_ZONE}
+    volumes:
+      - ${DB_MYSQL_DATA}:/var/lib/mysql
+  phpmyadmin:
+    container_name: phpmyadmin
+    image: phpmyadmin
+    restart: always
+    ports:
+      - "8091:80"
+    environment:
+      - PMA_HOST=db_mysql
+    depends_on:
+      - db_mysql
