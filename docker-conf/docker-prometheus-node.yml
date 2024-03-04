@@ -1,0 +1,42 @@
+version: '3.9'
+
+services:
+
+  prometheus:
+    image: prom/prometheus:latest
+    volumes:
+      - ${PORTAINER_DATA}:/etc/prometheus/
+      - ./conf-prometheus.yml:/etc/prometheus/prometheus.yml
+    container_name: prometheus
+    hostname: prometheus
+    command:
+      - --config.file=/etc/prometheus/prometheus.yml
+    ports:
+      - 9090:9090
+    restart: unless-stopped
+    environment:
+      TZ: "Europe/Moscow"
+    networks:
+      - default
+
+  node-exporter:
+    image: prom/node-exporter
+    volumes:
+      - ${PROMETHEUS_NODE_PROC_DATA}:/host/proc:ro
+      - ${PROMETHEUS_NODE_SYS_DATA}:/host/sys:ro
+      - ${PROMETHEUS_NODE_ROOTFS_DATA}:/rootfs:ro
+    container_name: exporter
+    hostname: exporter
+    command:
+      - --path.procfs=/host/proc
+      - --path.sysfs=/host/sys
+      - --collector.filesystem.ignored-mount-points
+      - ^/(sys|proc|dev|host|etc|rootfs/var/lib/docker/containers|rootfs/var/lib/docker/overlay2|rootfs/run/docker/netns|rootfs/var/lib/docker/aufs)($$|/)
+    ports:
+      - 9100:9100
+    restart: unless-stopped
+    environment:
+      TZ: "Europe/Moscow"
+    networks:
+      - default
+

@@ -12,4 +12,3 @@ services:
       - ${PORTAINER_DATA}:/data
     environment:
       - TZ=${TIME_ZONE}
-        

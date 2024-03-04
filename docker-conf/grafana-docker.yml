@@ -14,9 +14,13 @@ services:
     volumes:
       - ${GRAFANA_DATA}:/etc/grafana/provisioning/
     networks:
-      - grafana_network
+      - default
 
 networks:
-  grafana_network:
+  default:
+    ipam:
+      driver: default
+      config:
+        - subnet: 172.28.0.0/16
 
 
